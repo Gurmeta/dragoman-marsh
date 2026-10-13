@@ -94,6 +94,9 @@ export const translations = {
       rights: "Опазване на дивата природа. Всички права запазени.",
       credits: "Уебсайтът е създаден по идея на Георги Стефанов.",
     },
+    ui: {
+      close: "Затвори",
+    },
   },
   en: {
     nav: {
@@ -183,6 +186,9 @@ export const translations = {
     footer: {
       rights: "Wildlife Conservation. All rights reserved.",
       credits: "The website was created based on an idea by Georgi Stefanov.",
+    },
+    ui: {
+      close: "Close",
     },
   },
   ua: {
@@ -274,6 +280,9 @@ export const translations = {
       rights: "Охорона дикої природи. Всі права захищені.",
       credits: "Веб-сайт створено за ідеєю Георгія Стефанова.",
     },
+    ui: {
+      close: "Закрити",
+    },
   },
   he: {
     nav: { about: "אודות", bio: "מגוון ביולוגי", video: "וידאו", info: "מידע" },
@@ -359,6 +368,9 @@ export const translations = {
       rights: "שימור חיות בר. כל הזכויות שמורות.",
       credits: "האתר נוצר על פי רעיון של גיאורגי סטפנוב.",
     },
+    ui: {
+      close: "סגור",
+    },
   },
 };
 
@@ -376,8 +388,12 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 const LANG_STORAGE_KEY = "dragoman-marsh-lang";
 
 function getInitialLang(): Language {
-  const stored = localStorage.getItem(LANG_STORAGE_KEY);
-  if (stored && stored in translations) return stored as Language;
+  try {
+    const stored = localStorage.getItem(LANG_STORAGE_KEY);
+    if (stored && stored in translations) return stored as Language;
+  } catch {
+    // Storage can be blocked (private mode, strict cookie settings); fall back to default.
+  }
   return "bg";
 }
 
@@ -385,7 +401,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Language>(getInitialLang);
 
   useEffect(() => {
-    localStorage.setItem(LANG_STORAGE_KEY, lang);
+    try {
+      localStorage.setItem(LANG_STORAGE_KEY, lang);
+    } catch {
+      // Preference simply won't persist when storage is unavailable.
+    }
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
     // "ua" is our internal code; the ISO 639-1 code for Ukrainian is "uk"
     document.documentElement.lang = lang === "ua" ? "uk" : lang;

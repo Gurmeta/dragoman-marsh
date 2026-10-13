@@ -67,9 +67,10 @@ export default function VideoSection() {
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/5u-2kvc47Yo?modestbranding=1&rel=0&showinfo=0"
+                src="https://www.youtube-nocookie.com/embed/5u-2kvc47Yo?modestbranding=1&rel=0"
                 title={t.video.v1_title}
                 loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -94,9 +95,10 @@ export default function VideoSection() {
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/GQMAzf5hczY?modestbranding=1&rel=0&showinfo=0"
+                src="https://www.youtube-nocookie.com/embed/GQMAzf5hczY?modestbranding=1&rel=0"
                 title={t.video.v2_title}
                 loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
