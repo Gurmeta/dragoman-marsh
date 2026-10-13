@@ -1,0 +1,43 @@
+name: Bug report
+description: Something on the website does not work as expected
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the site
+        2. Switch language to ...
+        3. Scroll to ...
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Site language
+      options:
+        - Bulgarian
+        - English
+        - Ukrainian
+        - Hebrew
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and device
+      placeholder: Safari 18 on iPhone 15, Chrome 130 on Windows 11, ...
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or console errors
