@@ -112,7 +112,7 @@ export default function App() {
         {isMenuOpen && (
           <div
             id="mobile-menu"
-            className="md:hidden bg-stone-950/95 backdrop-blur-md border-b border-white/10"
+            className="md:hidden bg-black/40 backdrop-blur-xl border-b border-white/10"
             dir={isRtl ? "rtl" : "ltr"}
           >
             <ul className="max-w-7xl mx-auto px-4 py-2 flex flex-col">
@@ -121,7 +121,7 @@ export default function App() {
                   <a
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="block py-3 min-h-11 text-lg font-medium text-stone-100 hover:text-emerald-400 transition-colors"
+                    className="block py-3 min-h-11 text-lg font-medium text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.6)] hover:text-emerald-400 transition-colors"
                   >
                     {link.label}
                   </a>
