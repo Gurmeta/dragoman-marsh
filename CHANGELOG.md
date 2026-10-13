@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- Build tooling upgraded to major versions: Vite 8, `@vitejs/plugin-react` 6, TypeScript 7 and `lucide-react` 1. Minimum Node.js is now 22.12 (required by Vite 8).
+
 ## [1.1.0] - 2026-10-14
 
 ### Added
