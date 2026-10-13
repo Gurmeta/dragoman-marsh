@@ -1,9 +1,11 @@
 import { motion } from "motion/react";
 import { ArrowDown } from "lucide-react";
 import { useLanguage } from "../i18n";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 export default function Hero() {
   const { t, isRtl } = useLanguage();
+  const reducedMotion = usePrefersReducedMotion();
 
   return (
     <section
@@ -13,10 +15,13 @@ export default function Hero() {
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full bg-stone-900 overflow-hidden pointer-events-none">
         <video
-          autoPlay
+          autoPlay={!reducedMotion}
           muted
           loop
           playsInline
+          preload="auto"
+          poster={`${import.meta.env.BASE_URL}hero-poster.jpg`}
+          aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
           src={`${import.meta.env.BASE_URL}bg-video.mp4`}
         />

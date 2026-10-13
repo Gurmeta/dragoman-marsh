@@ -1,34 +1,38 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Bird, Flower2, X, Info } from "lucide-react";
 import { useLanguage } from "../i18n";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 const ImageCard = ({ item, idx, onSelect }: { item: any; idx: number; onSelect: (item: any) => void; key?: string }) => (
-  <motion.div
+  <motion.button
+    type="button"
     initial={{ opacity: 0, scale: 0.9 }}
     whileInView={{ opacity: 1, scale: 1 }}
     viewport={{ once: true, margin: "-50px" }}
     transition={{ duration: 0.5, delay: idx * 0.1 }}
     onClick={() => onSelect(item)}
-    className="relative aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-lg"
+    aria-haspopup="dialog"
+    className="relative block w-full text-start aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-950"
   >
     <img
       src={item.image}
-      alt={item.name}
+      alt=""
       loading="lazy"
+      decoding="async"
       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
     />
-    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 flex items-center justify-center">
       <div className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
         <Info className="w-6 h-6" />
       </div>
     </div>
     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-      <h4 className="text-white font-medium text-sm drop-shadow-md truncate">
+      <span className="block text-white font-medium text-sm leading-tight drop-shadow-md line-clamp-2">
         {item.name}
-      </h4>
+      </span>
     </div>
-  </motion.div>
+  </motion.button>
 );
 
 export default function Biodiversity() {
@@ -40,6 +44,23 @@ export default function Biodiversity() {
     icon: any;
     category: string;
   } | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Modal behaviour: close on Escape, move focus into the dialog, restore it on close.
+  useEffect(() => {
+    if (!selectedSpecies) return;
+    const trigger = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedSpecies(null);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      trigger?.focus();
+    };
+  }, [selectedSpecies]);
 
   const fauna = [
     {
@@ -136,10 +157,13 @@ export default function Biodiversity() {
       {/* Background Video Placeholder */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <video
-          autoPlay
+          autoPlay={!reducedMotion}
           loop
           muted
           playsInline
+          preload="metadata"
+          poster={`${import.meta.env.BASE_URL}bio-poster.jpg`}
+          aria-hidden="true"
           className="absolute w-full h-full object-cover"
           src={`${import.meta.env.BASE_URL}bio-bg.mp4`}
         />
@@ -252,6 +276,9 @@ export default function Biodiversity() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={selectedSpecies.name}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
             onClick={() => setSelectedSpecies(null)}
           >
@@ -263,9 +290,11 @@ export default function Biodiversity() {
               onClick={(e) => e.stopPropagation()}
             >
               <button
+                ref={closeButtonRef}
+                type="button"
                 onClick={() => setSelectedSpecies(null)}
-                aria-label="Close"
-                className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-emerald-500 transition-colors"
+                aria-label={t.ui.close}
+                className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

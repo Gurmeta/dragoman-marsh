@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Navigation,
@@ -13,6 +13,22 @@ import { useLanguage } from "../i18n";
 export default function VisitInfo() {
   const { t, isRtl } = useLanguage();
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Modal behaviour: close on Escape, move focus into the dialog, restore it on close.
+  useEffect(() => {
+    if (!isMapOpen) return;
+    const trigger = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMapOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      trigger?.focus();
+    };
+  }, [isMapOpen]);
 
   const tips = [
     {
@@ -77,18 +93,22 @@ export default function VisitInfo() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Map Image Section */}
-          <motion.div
+          <motion.button
+            type="button"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-8 relative rounded-3xl overflow-hidden shadow-xl group cursor-pointer"
+            className="lg:col-span-8 relative block text-start rounded-3xl overflow-hidden shadow-xl group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
             onClick={() => setIsMapOpen(true)}
+            aria-haspopup="dialog"
+            aria-label={t.visit.map_title}
           >
             <img
               src="https://visitdragoman.com/wp-content/uploads/2019/06/legenda-1024x639.jpg"
-              alt={t.visit.map_title}
+              alt=""
               loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[400px]"
             />
             <div className="absolute inset-0 bg-stone-900/20 group-hover:bg-stone-900/10 transition-colors duration-500" />
@@ -97,19 +117,19 @@ export default function VisitInfo() {
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-900/90 via-stone-900/50 to-transparent p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-white text-2xl font-serif mb-2">
+                  <span className="block text-white text-2xl font-serif mb-2">
                     {t.visit.map_title}
-                  </h4>
-                  <p className="text-emerald-100 font-light text-sm opacity-90">
+                  </span>
+                  <span className="block text-emerald-100 font-light text-sm opacity-90">
                     {t.visit.photo_d}
-                  </p>
+                  </span>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transform group-hover:scale-110 transition-transform">
                   <Maximize2 className="w-5 h-5" />
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.button>
 
           {/* Tips Section */}
           <motion.div
@@ -151,6 +171,9 @@ export default function VisitInfo() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.visit.map_title}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-950/90 backdrop-blur-sm"
             onClick={() => setIsMapOpen(false)}
           >
@@ -162,9 +185,11 @@ export default function VisitInfo() {
               onClick={(e) => e.stopPropagation()}
             >
               <button
+                ref={closeButtonRef}
+                type="button"
                 onClick={() => setIsMapOpen(false)}
-                aria-label="Close"
-                className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-emerald-500 transition-colors"
+                aria-label={t.ui.close}
+                className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>

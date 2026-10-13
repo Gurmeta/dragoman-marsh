@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <a
             href="#home"
-            className="flex items-center gap-3 text-xl font-serif font-bold text-white tracking-tight hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 min-h-11 text-xl font-serif font-bold text-white tracking-tight hover:opacity-80 transition-opacity"
           >
             <Logo className="w-8 h-8" />
             <span>
@@ -25,19 +25,19 @@ export default function Footer() {
           <div className="flex gap-8 text-sm font-medium text-stone-300">
             <a
               href="#biodiversity"
-              className="hover:text-emerald-400 transition-colors"
+              className="inline-block px-2 py-3 hover:text-emerald-400 transition-colors"
             >
               {t.nav.bio}
             </a>
             <a
               href="#media"
-              className="hover:text-emerald-400 transition-colors"
+              className="inline-block px-2 py-3 hover:text-emerald-400 transition-colors"
             >
               {t.nav.video}
             </a>
             <a
               href="#visit"
-              className="hover:text-emerald-400 transition-colors"
+              className="inline-block px-2 py-3 hover:text-emerald-400 transition-colors"
             >
               {t.nav.info}
             </a>
@@ -51,7 +51,7 @@ export default function Footer() {
                 aria-pressed={lang === l}
                 aria-label={`Switch language to ${languageNames[l]}`}
                 title={languageNames[l]}
-                className={`px-2 py-1.5 rounded transition-all cursor-pointer ${lang === l ? "bg-emerald-500/20 border border-emerald-500/40 scale-110" : "opacity-60 hover:opacity-100 hover:bg-white/10 border border-transparent"}`}
+                className={`min-w-11 min-h-11 flex items-center justify-center rounded transition-all cursor-pointer ${lang === l ? "bg-emerald-500/20 border border-emerald-500/40 scale-110" : "opacity-60 hover:opacity-100 hover:bg-white/10 border border-transparent"}`}
               >
                 <FlagIcon lang={l} />
               </button>
