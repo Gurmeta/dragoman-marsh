@@ -57,20 +57,20 @@ export default function App() {
         {/* Navigation Bar */}
         <nav
           aria-label="Main"
-          className={`relative w-full bg-black/40 backdrop-blur-md border-b border-white/10 transition-all duration-500 transform ${isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}
+          className={`relative w-full bg-gradient-to-b from-black/60 to-black/25 backdrop-blur-lg border-b border-white/10 transition-all duration-500 transform ${isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}
           dir={isRtl ? "rtl" : "ltr"}
         >
           <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
             <a
               href="#home"
-              className="text-xl font-serif font-bold text-white tracking-tight flex-shrink-0 flex items-center gap-3 min-h-11 min-w-11"
+              className="text-xl font-serif font-bold text-white tracking-tight [text-shadow:0_1px_3px_rgb(0_0_0/0.6)] flex-shrink-0 flex items-center gap-3 min-h-11 min-w-11"
             >
               <Logo className="w-8 h-8" />
               <span className="hidden sm:block">
                 {t.hero.title1} {t.hero.title2}
               </span>
             </a>
-            <div className="hidden md:flex gap-8 text-sm font-medium text-stone-200 flex-grow justify-center">
+            <div className="hidden md:flex gap-8 text-[15px] font-semibold tracking-wide text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.6)] flex-grow justify-center">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
@@ -89,7 +89,7 @@ export default function App() {
                   aria-pressed={lang === l}
                   aria-label={`Switch language to ${languageNames[l]}`}
                   title={languageNames[l]}
-                  className={`min-w-11 min-h-11 flex items-center justify-center rounded transition-all cursor-pointer ${lang === l ? "bg-emerald-500/20 border border-emerald-500/40 scale-110" : "opacity-60 hover:opacity-100 hover:bg-white/10 border border-transparent"}`}
+                  className={`min-w-11 min-h-11 flex items-center justify-center rounded transition-all cursor-pointer ${lang === l ? "bg-emerald-500/20 border border-emerald-500/40 scale-110" : "opacity-75 hover:opacity-100 hover:bg-white/10 border border-transparent"}`}
                 >
                   <FlagIcon lang={l} />
                 </button>
