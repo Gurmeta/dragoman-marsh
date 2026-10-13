@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import Hero from "./components/Hero";
 import Biodiversity from "./components/Biodiversity";
@@ -14,9 +14,28 @@ export default function App() {
   const [isNavHovered, setIsNavHovered] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrollingUp, setIsScrollingUp] = useState(false);
+  const anchorScrollY = useRef(0);
 
+  // Reveal the bar on any deliberate upward scroll and hide it when scrolling down.
+  // The threshold ignores tiny jitter; the anchor only moves once a direction is confirmed,
+  // so slow scrolling still adds up to a decision.
   useEffect(() => {
-    const onScroll = () => setIsAtTop(window.scrollY < 80);
+    const THRESHOLD = 4;
+    anchorScrollY.current = window.scrollY;
+    const onScroll = () => {
+      const y = Math.max(window.scrollY, 0);
+      setIsAtTop(y < 80);
+      const delta = y - anchorScrollY.current;
+      if (delta <= -THRESHOLD) {
+        setIsScrollingUp(true);
+        anchorScrollY.current = y;
+      } else if (delta >= THRESHOLD) {
+        setIsScrollingUp(false);
+        setIsMenuOpen(false);
+        anchorScrollY.current = y;
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -31,8 +50,8 @@ export default function App() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [isMenuOpen]);
 
-  // Visible at the top, while the mouse is in the top zone, or while the mobile menu is open
-  const isNavVisible = isAtTop || isNavHovered || isMenuOpen;
+  // Visible at the top, when scrolling up, while the mouse is in the top zone, or while the mobile menu is open
+  const isNavVisible = isAtTop || isScrollingUp || isNavHovered || isMenuOpen;
 
   const navLinks = [
     { href: "#biodiversity", label: t.nav.bio },
@@ -53,6 +72,15 @@ export default function App() {
       >
         {/* Trigger area (invisible, always catches mouse enter at the top) */}
         <div className="absolute top-0 left-0 w-full h-24" />
+
+        {/* Mobile: transparent layer behind the menu so a tap anywhere outside closes it */}
+        {isMenuOpen && (
+          <div
+            aria-hidden="true"
+            className="md:hidden fixed inset-0 -z-10"
+            onClick={() => setIsMenuOpen(false)}
+          />
+        )}
 
         {/* Navigation Bar */}
         <nav
