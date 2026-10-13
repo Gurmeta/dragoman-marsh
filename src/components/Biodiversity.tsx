@@ -28,7 +28,7 @@ const ImageCard = ({ item, idx, onSelect }: { item: any; idx: number; onSelect: 
       </div>
     </div>
     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-      <span className="block text-white font-medium text-sm drop-shadow-md truncate">
+      <span className="block text-white font-medium text-sm leading-tight drop-shadow-md line-clamp-2">
         {item.name}
       </span>
     </div>

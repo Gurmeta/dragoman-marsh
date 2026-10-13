@@ -96,6 +96,7 @@ export const translations = {
     },
     ui: {
       close: "Затвори",
+      menu: "Меню",
     },
   },
   en: {
@@ -189,6 +190,7 @@ export const translations = {
     },
     ui: {
       close: "Close",
+      menu: "Menu",
     },
   },
   ua: {
@@ -282,6 +284,7 @@ export const translations = {
     },
     ui: {
       close: "Закрити",
+      menu: "Меню",
     },
   },
   he: {
@@ -370,6 +373,7 @@ export const translations = {
     },
     ui: {
       close: "סגור",
+      menu: "תפריט",
     },
   },
 };
