@@ -11,7 +11,7 @@
 [![Release](https://img.shields.io/github/v/release/Gurmeta/dragoman-marsh)](https://github.com/Gurmeta/dragoman-marsh/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white)
 
@@ -60,8 +60,8 @@ The complex hosts **256 bird species** (61% of the country's ornithofauna), 43 m
 | Area | Technology |
 |---|---|
 | Framework | [React 19](https://react.dev/) |
-| Build tool | [Vite 6](https://vitejs.dev/) |
-| Language | [TypeScript](https://www.typescriptlang.org/) (strict mode) |
+| Build tool | [Vite 8](https://vitejs.dev/) |
+| Language | [TypeScript 7](https://www.typescriptlang.org/) (strict mode) |
 | Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
 | Animation | [Motion](https://motion.dev/) |
 | Icons | [Lucide](https://lucide.dev/) |
@@ -116,7 +116,7 @@ More detail, including the i18n flow and design decisions, is in [docs/ARCHITECT
 
 ## Getting started
 
-Requires **Node.js 22** or newer (see [`.nvmrc`](.nvmrc)).
+Requires **Node.js 22.12** or newer (see [`.nvmrc`](.nvmrc)).
 
 ```bash
 git clone https://github.com/Gurmeta/dragoman-marsh.git
