@@ -41,3 +41,28 @@ ffmpeg -ss 3 -i source.mp4 -frames:v 1 \
 - Background videos must be muted, looping and `playsInline`, and must have a poster.
 - Decorative videos use `aria-hidden="true"`; informative images need meaningful `alt` text.
 - Only add media you have the right to publish, and keep a record of the author and licence (see the credits section in the README).
+
+## Species and map images (`public/images/`)
+
+The photos are self-hosted (previously hotlinked from visitdragoman.com, which now returns 403). Each is stored as WebP in several widths (`<slug>-<width>.webp`) and referenced through `srcset` in `src/components/Biodiversity.tsx`. Originals are from [Wikimedia Commons](https://commons.wikimedia.org/); attribution is required by the CC licences.
+
+| Slug | Subject | Author | Licence |
+|---|---|---|---|
+| `little-bittern` | Ixobrychus minutus | Alexis Lours | CC BY 4.0 |
+| `baillons-crake` | Porzana pusilla | Tisha Mukherjee | CC BY-SA 4.0 |
+| `bittern` | Botaurus stellaris | Jakob Jilg | CC BY-SA 4.0 |
+| `moorhen` | Gallinula galeata | U.S. Fish and Wildlife Service | Public domain |
+| `grebe` | Podiceps cristatus | JJ Harrison | CC BY-SA 3.0 |
+| `spotted-crake` | Porzana porzana (cropped) | Pierre-Marie Epiney | CC BY-SA 2.0 |
+| `fritillary` | Fritillaria meleagroides | Андрей Ралев | CC BY-SA 3.0 |
+| `water-lily` | Nymphaea alba | DerHexer | CC BY-SA 3.0 |
+| `fringed-water-lily` | Nymphoides peltata | TeunSpaans | CC BY-SA 3.0 |
+| `viola` | Viola pumila | Public domain (Wikimedia Commons) | Public domain |
+
+`ramsar-map.jpg` is the Ramsar site map with legend (701x437, supplied by the project owner, source: visitdragoman.com).
+
+Regenerate a rendition with FFmpeg (WebP, no upscaling):
+
+```bash
+ffmpeg -i original.jpg -vf "scale=1280:-2:flags=lanczos" -c:v libwebp -quality 82 -compression_level 6 public/images/<slug>-1280.webp
+```
