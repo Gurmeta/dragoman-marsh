@@ -4,6 +4,16 @@ import { Bird, Flower2, X, Info } from "lucide-react";
 import { useLanguage } from "../i18n";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
+// Self-hosted WebP renditions live in public/images as <slug>-<width>.webp.
+const speciesImage = (slug: string, widths: number[]) => {
+  const base = `${import.meta.env.BASE_URL}images/${slug}`;
+  const fallback = widths.filter((w) => w <= 1280).at(-1);
+  return {
+    image: `${base}-${fallback}.webp`,
+    srcSet: widths.map((w) => `${base}-${w}.webp ${w}w`).join(", "),
+  };
+};
+
 const ImageCard = ({ item, idx, onSelect }: { item: any; idx: number; onSelect: (item: any) => void; key?: string }) => (
   <motion.button
     type="button"
@@ -17,6 +27,8 @@ const ImageCard = ({ item, idx, onSelect }: { item: any; idx: number; onSelect: 
   >
     <img
       src={item.image}
+      srcSet={item.srcSet}
+      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       alt=""
       loading="lazy"
       decoding="async"
@@ -41,6 +53,7 @@ export default function Biodiversity() {
     name: string;
     description: string;
     image: string;
+    srcSet: string;
     icon: any;
     category: string;
   } | null>(null);
@@ -67,48 +80,42 @@ export default function Biodiversity() {
       name: t.bio.b1_n,
       category: t.bio.birds,
       icon: <Bird className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Little_bittern_Ixobrychus_minutus.jpg",
+      ...speciesImage("little-bittern", [640, 1280, 2400]),
       description: t.bio.b1_d,
     },
     {
       name: t.bio.b2_n,
       category: t.bio.birds,
       icon: <Bird className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Baillons_crake.jpg",
+      ...speciesImage("baillons-crake", [640, 1280, 2400]),
       description: t.bio.b2_d,
     },
     {
       name: t.bio.b3_n,
       category: t.bio.birds,
       icon: <Bird className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Botaurus_stellaris_Marek_Szczepanek.jpg",
+      ...speciesImage("bittern", [640, 1280, 2400]),
       description: t.bio.b3_d,
     },
     {
       name: t.bio.b4_n,
       category: t.bio.birds,
       icon: <Bird className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Gallinula_galeata_at_Squaw_Creek_NWR.jpg",
+      ...speciesImage("moorhen", [640, 1179]),
       description: t.bio.b4_d,
     },
     {
       name: t.bio.b5_n,
       category: t.bio.birds,
       icon: <Bird className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Podiceps_cristatus_2_-_Lake_Dulverton.jpg",
+      ...speciesImage("grebe", [640, 1280, 2400]),
       description: t.bio.b5_d,
     },
     {
       name: t.bio.b6_n,
       category: t.bio.birds,
       icon: <Bird className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Porzana_porzana_3_Marek_Szczepanek.jpg",
+      ...speciesImage("spotted-crake", [640, 1280, 1400]),
       description: t.bio.b6_d,
     },
   ];
@@ -118,32 +125,28 @@ export default function Biodiversity() {
       name: t.bio.p1_n,
       category: t.bio.plants,
       icon: <Flower2 className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Fritillaria_meleagroides_AR_3.jpg",
+      ...speciesImage("fritillary", [640, 1280, 1807]),
       description: t.bio.p1_d,
     },
     {
       name: t.bio.p2_n,
       category: t.bio.plants,
       icon: <Flower2 className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Nymphaea_alba_in_Duisburg.jpg",
+      ...speciesImage("water-lily", [640, 1280, 2400]),
       description: t.bio.p2_d,
     },
     {
       name: t.bio.p3_n,
       category: t.bio.plants,
       icon: <Flower2 className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/NymphoidesPeltata-flower2-hr.jpg",
+      ...speciesImage("fringed-water-lily", [640, 1280, 2048]),
       description: t.bio.p3_d,
     },
     {
       name: t.bio.p4_n,
       category: t.bio.plants,
       icon: <Flower2 className="w-4 h-4" />,
-      image:
-        "https://visitdragoman.com/wp-content/uploads/2019/06/Viola_pumila_eF.jpg",
+      ...speciesImage("viola", [640, 1280, 1878]),
       description: t.bio.p4_d,
     },
   ];
@@ -302,6 +305,8 @@ export default function Biodiversity() {
               <div className="w-full md:w-2/5 h-48 sm:h-64 md:h-auto shrink-0">
                 <img
                   src={selectedSpecies.image}
+                  srcSet={selectedSpecies.srcSet}
+                  sizes="(min-width: 768px) 40vw, 100vw"
                   alt={selectedSpecies.name}
                   className="w-full h-full object-cover"
                 />

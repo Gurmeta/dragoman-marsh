@@ -105,7 +105,7 @@ export default function VisitInfo() {
             aria-label={t.visit.map_title}
           >
             <img
-              src="https://visitdragoman.com/wp-content/uploads/2019/06/legenda-1024x639.jpg"
+              src={`${import.meta.env.BASE_URL}images/ramsar-map.jpg`}
               alt=""
               loading="lazy"
               decoding="async"
@@ -194,7 +194,7 @@ export default function VisitInfo() {
                 <X className="w-6 h-6" />
               </button>
               <img
-                src="https://visitdragoman.com/wp-content/uploads/2019/06/legenda.jpg"
+                src={`${import.meta.env.BASE_URL}images/ramsar-map.jpg`}
                 alt={t.visit.map_title}
                 className="w-full h-auto max-h-[90vh] object-contain bg-stone-100"
               />
