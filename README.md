@@ -44,7 +44,7 @@ The complex hosts **256 bird species** (61% of the country's ornithofauna), 43 m
 
 - **Biodiversity showcase** — an interactive gallery of emblematic bird and plant species, each opening a detailed description.
 - **Multimedia experience** — video backgrounds, a panoramic drone film and a video presentation.
-- **Visitor information** — how to get there, the best seasons for birdwatching, the wooden pontoon trails, the autumn bird-ringing camp and an enlargeable map of the complex.
+- **Visitor information** — how to get there, the best seasons for birdwatching, the wooden pontoon trails, the autumn bird-ringing camp, an enlargeable map of the complex and an [interactive map](docs/MAP.md) (basemaps, relief, protected areas, peaks and springs, plus a printable poster) that loads only on demand.
 - **Four languages** — Bulgarian, English, Ukrainian and Hebrew, with full right-to-left layout for Hebrew. The choice is remembered between visits.
 - **Responsive and touch friendly** — a dedicated mobile menu and 44 px touch targets.
 - **Accessible** — keyboard navigation, dialogs that close with Esc, reduced-motion support and translated labels.
@@ -65,6 +65,7 @@ The complex hosts **256 bird species** (61% of the country's ornithofauna), 43 m
 | Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
 | Animation | [Motion](https://motion.dev/) |
 | Icons | [Lucide](https://lucide.dev/) |
+| Interactive map | [Leaflet](https://leafletjs.com/) page in `public/map/`, Esri and OpenTopoMap basemaps |
 | Fonts | [Inter](https://rsms.me/inter/) and [Playfair Display](https://fonts.google.com/specimen/Playfair+Display), self-hosted via Fontsource |
 | Hosting and CI/CD | GitHub Pages, GitHub Actions, Dependabot |
 
@@ -102,9 +103,9 @@ More detail, including the i18n flow and design decisions, is in [docs/ARCHITECT
 .
 ├── .github/              # CI and deploy workflows, Dependabot, issue and PR templates
 ├── docs/                 # Architecture notes, media guide, screenshots
-├── public/               # Videos, posters, social image, robots.txt, sitemap.xml
+├── public/               # Videos, posters, WebP images, map/ (Leaflet page), robots.txt, sitemap.xml
 ├── src/
-│   ├── components/       # Hero, Biodiversity, VideoSection, VisitInfo, Footer, Logo, Flags
+│   ├── components/       # Hero, Biodiversity, VideoSection, VisitInfo, InteractiveMap, Footer, Logo, Flags
 │   ├── hooks/            # usePrefersReducedMotion
 │   ├── i18n.tsx          # Translations (bg, en, ua, he) and language provider
 │   ├── App.tsx           # Layout, navigation, mobile menu
@@ -148,7 +149,7 @@ Vite's `base` is `/dragoman-marsh/` on GitHub Actions and `/` locally. If the re
 
 - **Accessibility:** semantic buttons and dialogs, Esc to close, focus restored on close, visible focus rings, `prefers-reduced-motion` respected, labels translated in all languages.
 - **Privacy:** self-hosted fonts, privacy-enhanced YouTube embeds (`youtube-nocookie.com`), no analytics, and the site itself sets no cookies. Only the chosen language is stored in `localStorage`.
-- **Performance:** background videos compressed from 35.7 MB to about 10.9 MB with poster frames, lazy-loaded images and iframes, and variable fonts served from the same origin.
+- **Performance:** background videos compressed from 35.7 MB to about 10.9 MB with poster frames, lazy-loaded images, responsive WebP with `srcset`, an on-demand interactive map, and variable fonts served from the same origin.
 - **SEO and sharing:** canonical URL, Open Graph and Twitter card tags, `robots.txt` and `sitemap.xml`.
 
 ## Documentation
@@ -156,7 +157,8 @@ Vite's `base` is `/dragoman-marsh/` on GitHub Actions and `/` locally. If the re
 | Document | Contents |
 |---|---|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Component tree, i18n flow, deployment pipeline, design decisions |
-| [docs/MEDIA.md](docs/MEDIA.md) | How videos and images are optimised |
+| [docs/MEDIA.md](docs/MEDIA.md) | How videos and images are optimised, image credits |
+| [docs/MAP.md](docs/MAP.md) | Interactive map: files, behaviour, basemap terms |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, workflow and conventions |
 | [SECURITY.md](SECURITY.md) | How to report a vulnerability |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
@@ -165,7 +167,7 @@ Vite's `base` is `/dragoman-marsh/` on GitHub Actions and `/` locally. If the re
 
 Website created based on an idea by **Georgi Stefanov**.
 
-Photographs of species and the map of the complex are displayed from [visitdragoman.com](https://visitdragoman.com/), and several originate from Wikimedia Commons contributors. Photographs, videos and the map remain the property of their respective authors and are **not** covered by the MIT license. If you are a rights holder and want a credit added or an item removed, please open an issue.
+Species photographs are self-hosted from [Wikimedia Commons](https://commons.wikimedia.org/) under their original licences; authors and licences are listed in [docs/MEDIA.md](docs/MEDIA.md). Map data comes from OpenStreetMap contributors (ODbL), NASA SRTM and Natural Earth, with tiles by Esri and OpenTopoMap ([details](docs/MAP.md)). Photographs, videos and the maps remain the property of their respective authors and are **not** covered by the MIT license. If you are a rights holder and want a credit added or an item removed, please open an issue.
 
 ## License
 

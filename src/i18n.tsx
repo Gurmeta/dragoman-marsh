@@ -89,6 +89,10 @@ export const translations = {
       photo_d:
         "Идеално място за орнитология и улавяне на спиращи дъха залези зад Чепън планина.",
       map_title: "Карта на комплекса",
+      imap_title: "Интерактивна карта",
+      imap_desc: "Приближавайте, превключвайте подложки и релеф, разгледайте защитените зони, водите и върховете.",
+      imap_activate: "Натиснете, за да активирате картата",
+      imap_open: "Отвори на цял екран",
     },
     footer: {
       rights: "Опазване на дивата природа. Всички права запазени.",
@@ -183,6 +187,10 @@ export const translations = {
       photo_d:
         "An ideal place for ornithology and capturing breathtaking sunsets behind Chepan Mountain.",
       map_title: "Complex Map",
+      imap_title: "Interactive map",
+      imap_desc: "Zoom, switch basemaps and relief, and explore the protected areas, waters and peaks.",
+      imap_activate: "Click to activate the map",
+      imap_open: "Open full screen",
     },
     footer: {
       rights: "Wildlife Conservation. All rights reserved.",
@@ -277,6 +285,10 @@ export const translations = {
       photo_d:
         "Ідеальне місце для орнітології та зйомки захоплюючих заходів сонця за горою Чепинь.",
       map_title: "Карта комплексу",
+      imap_title: "Інтерактивна карта",
+      imap_desc: "Масштабуйте, перемикайте підкладки та рельєф, досліджуйте захищені зони, водойми та вершини.",
+      imap_activate: "Натисніть, щоб активувати карту",
+      imap_open: "Відкрити на весь екран",
     },
     footer: {
       rights: "Охорона дикої природи. Всі права захищені.",
@@ -366,6 +378,10 @@ export const translations = {
       photo_d:
         "מקום אידיאלי לצפרות וללכידת שקיעות עוצרות נשימה מאחורי הר צ'פאן.",
       map_title: "מפת מתחם",
+      imap_title: "מפה אינטראקטיבית",
+      imap_desc: "התקרבו, החליפו שכבות רקע ותבליט, וחקרו את אזורי ההגנה, המים והפסגות.",
+      imap_activate: "לחצו כדי להפעיל את המפה",
+      imap_open: "פתח במסך מלא",
     },
     footer: {
       rights: "שימור חיות בר. כל הזכויות שמורות.",

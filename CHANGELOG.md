@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+- Interactive map (`public/map/`): Leaflet page with Esri and OpenTopoMap basemaps, relief overlay, collapsible legend and a printable poster viewer. Embedded in the visitor section on demand; see [docs/MAP.md](docs/MAP.md).
+- Image credits and licences in `docs/MEDIA.md`.
+
+### Fixed
+- Species and map images no longer depend on visitdragoman.com (it began returning 403); they are self-hosted as responsive WebP.
+
 ### Changed
 - Build tooling upgraded to major versions: Vite 8, `@vitejs/plugin-react` 6, TypeScript 7 and `lucide-react` 1. Minimum Node.js is now 22.12 (required by Vite 8).
 

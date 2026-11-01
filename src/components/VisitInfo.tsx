@@ -9,6 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { useLanguage } from "../i18n";
+import InteractiveMap from "./InteractiveMap";
 
 export default function VisitInfo() {
   const { t, isRtl } = useLanguage();
@@ -90,6 +91,8 @@ export default function VisitInfo() {
             {t.visit.desc}
           </motion.p>
         </div>
+
+        <InteractiveMap />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Map Image Section */}
