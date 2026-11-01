@@ -53,7 +53,7 @@ The complex hosts **256 bird species** (61% of the country's ornithofauna), 43 m
 
 | Biodiversity | Visitor information | Mobile menu |
 |---|---|---|
-| <img src="docs/screenshots/biodiversity.jpg" alt="Gallery of bird species with a description of the fauna" width="360"> | <img src="docs/screenshots/visitor-info.jpg" alt="Map of the marsh and visitor tips" width="360"> | <img src="docs/screenshots/mobile-menu.jpg" alt="Mobile layout with the navigation menu open" width="170"> |
+| <img src="docs/screenshots/biodiversity.jpg" alt="Gallery of bird species with a description of the fauna" width="360"> | <img src="docs/screenshots/visitor-info.jpg" alt="Visitor section with the interactive map of the marsh" width="360"> | <img src="docs/screenshots/mobile-menu.jpg" alt="Mobile layout with the navigation menu open" width="170"> |
 
 ## Tech stack
 
