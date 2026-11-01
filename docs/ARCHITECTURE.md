@@ -12,6 +12,7 @@ flowchart TD
     App --> Bio["Biodiversity<br/>species gallery + dialog"]
     App --> Vid["VideoSection<br/>YouTube embeds"]
     App --> Visit["VisitInfo<br/>map, visitor tips"]
+    Visit --> IMap["InteractiveMap<br/>on-demand iframe"]
     App --> Footer["Footer"]
     Hero -.-> RM["usePrefersReducedMotion"]
     Bio -.-> RM
@@ -30,7 +31,8 @@ flowchart TD
 | `src/i18n.tsx` | All translations (`bg`, `en`, `ua`, `he`), `LanguageProvider` and `useLanguage()` |
 | `src/components/` | One component per page section, plus `Logo` and `Flags` |
 | `src/hooks/usePrefersReducedMotion.ts` | Reads the `prefers-reduced-motion` media query |
-| `public/` | Static assets copied as-is: videos, posters, social image, `robots.txt`, `sitemap.xml` |
+| `public/` | Static assets copied as-is: videos, posters, WebP images, `robots.txt`, `sitemap.xml` |
+| `public/map/` | Standalone Leaflet page embedded by `InteractiveMap`; see [MAP.md](MAP.md) |
 
 ## Internationalisation
 
@@ -78,10 +80,13 @@ flowchart LR
 | `youtube-nocookie.com` embeds with `loading="lazy"` | Fewer tracking cookies and no video bytes until the section is near the viewport |
 | Compressed, muted background videos with posters | About 10.9 MB total instead of 35.7 MB; the poster shows instantly and is used when motion is reduced |
 | Real `<button>` elements and `role="dialog"` | Keyboard and screen-reader access; Esc closes dialogs and focus returns to the trigger |
+| Interactive map as a separate page in an on-demand iframe | Its 6.5 MB of data and the map tiles cost nothing until a visitor asks for them, and Leaflet stays out of the React bundle |
+| Self-hosted, responsive WebP images | No dependency on third-party hosts (hotlinking from visitdragoman.com started returning 403); `srcset` serves 4K screens and phones appropriately |
 | `strict` TypeScript and a typed translation contract | Catches missing translations and null errors at build time |
 | `localStorage` access wrapped in `try/catch` | The site keeps working when storage is blocked (private mode, strict settings) |
 
 ## Known limitations
 
-- Species and map photographs are loaded from `visitdragoman.com`, a third-party host. If that site changes or blocks hotlinking, the images will not load. Moving them into `public/` is the long-term fix once publishing rights are confirmed.
+- Map tiles come from third parties (Esri, OpenTopoMap) without API keys; they may change their terms or rate-limit heavy traffic, see [MAP.md](MAP.md).
+- The interactive map is bilingual (Bulgarian/English) and is not translated into Ukrainian or Hebrew.
 - The app is client-rendered, so crawlers that do not run JavaScript only see the HTML shell (title, description and social metadata are present in `index.html`).

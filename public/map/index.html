@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Драгоманско блато · Чепън планина — интерактивна карта</title>
+<meta name="description" content="Интерактивна карта на Драгоманското блато и Чепън планина: защитени зони, водни обекти, гори, върхове и извори.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --ink-primary: #0b0b0b;
+    --ink-secondary: #52514e;
+    --ink-muted: #6b6a65;
+    --grid: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --accent: #0f7d57;
+    --accent-ink: #ffffff;
+    --shadow: 0 6px 22px rgba(0,0,0,.13);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; height:100%; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { background: var(--page); color: var(--ink-primary); }
+  #map { position:absolute; inset:0; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .panel {
+    position:absolute; z-index:1000;
+    background: var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow: var(--shadow);
+  }
+
+  /* Toolbar */
+  #bar {
+    position:absolute; z-index:1001; top:10px; left:64px; right:14px;
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; pointer-events:none;
+  }
+  #bar > * { pointer-events:auto; }
+  .seg {
+    display:inline-flex; padding:3px; gap:2px;
+    background: var(--surface-1); border:1px solid var(--border);
+    border-radius:10px; box-shadow: var(--shadow);
+  }
+  .seg button, .chip {
+    display:inline-flex; align-items:center; gap:6px;
+    border:0; background:transparent; cursor:pointer;
+    font-size:12px; font-weight:600; line-height:1; padding:8px 11px; border-radius:8px;
+    transition: background-color .15s, color .15s;
+  }
+  .seg button:hover, .chip:hover { background: rgba(11,11,11,.06); }
+  .seg button[aria-pressed="true"], .chip[aria-pressed="true"] {
+    background: var(--accent); color: var(--accent-ink);
+  }
+  .chip {
+    background: var(--surface-1); border:1px solid var(--border); box-shadow: var(--shadow);
+    padding:9px 12px; border-radius:10px;
+  }
+  .chip[aria-pressed="true"] { border-color: var(--accent); }
+  #bar svg { width:15px; height:15px; flex:0 0 auto; }
+  #bar .en { font-weight:500; opacity:.7; font-size:11px; }
+  .seg button[aria-pressed="true"] .en, .chip[aria-pressed="true"] .en { opacity:.85; }
+
+  /* Legend */
+  #legend {
+    top:62px; right:14px; width:308px; max-height:calc(100% - 76px);
+    overflow:auto; padding:14px 16px 16px;
+  }
+  #legend[hidden] { display:none; }
+  #legend h1 { font-size:15px; margin:0 0 2px; letter-spacing:.2px; }
+  #legend .sub { font-size:11px; color: var(--ink-secondary); margin-bottom:11px; }
+  #legend h2 {
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.7px;
+    color: var(--ink-muted); margin:14px 0 7px; font-weight:700;
+  }
+  .lg { display:flex; align-items:center; gap:9px; margin:5px 0; font-size:11.5px; }
+  .lg .sw { width:20px; height:12px; border-radius:3px; flex:0 0 auto; border:1px solid var(--border); }
+  .lg .sw.line { height:3px; border-radius:2px; border:none; }
+  .lg .sw.dash { height:0; border-top:2px dashed; background:none !important; border-radius:0; }
+  .lg .en { display:block; font-size:10px; color: var(--ink-muted); }
+  #legend .credits { font-size:9.5px; color: var(--ink-muted); margin-top:13px;
+                     border-top:1px solid var(--grid); padding-top:9px; line-height:1.55; }
+
+  #info {
+    bottom:44px; left:14px; padding:10px 14px; font-size:11px;
+    color: var(--ink-secondary); max-width:430px; line-height:1.5;
+  }
+  #info b { color: var(--ink-primary); }
+
+  .leaflet-popup-content { font-size:12px; line-height:1.5; }
+  .popup-title { font-weight:700; font-size:13px; margin-bottom:3px; }
+  .popup-en { color: var(--ink-secondary); font-size:11px; }
+  .popup-meta { color: var(--ink-muted); font-size:10.5px; margin-top:4px; }
+
+  #status {
+    left:50%; bottom:44px; transform:translateX(-50%); padding:8px 14px;
+    font-size:12px; color: var(--ink-secondary); max-width:min(92vw, 520px); text-align:center;
+  }
+  #status[hidden] { display:none; }
+  #status.error { color:#9b1c1c; }
+
+  /* Poster viewer */
+  #poster {
+    position:fixed; inset:0; z-index:3000; display:flex; flex-direction:column;
+    background: rgba(12,10,9,.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  #poster[hidden] { display:none; }
+  #poster header {
+    display:flex; align-items:center; gap:10px; padding:10px 14px; color:#fff; flex:0 0 auto;
+  }
+  #poster header h2 { margin:0 auto 0 0; font-size:14px; font-weight:600; }
+  #poster header h2 span { font-weight:400; opacity:.7; font-size:12px; margin-left:6px; }
+  #poster .act {
+    display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:8px;
+    background: rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.18);
+    font-size:12px; font-weight:600; text-decoration:none; cursor:pointer;
+  }
+  #poster .act:hover { background: rgba(255,255,255,.22); }
+  #poster .act:focus-visible { outline-color:#fff; }
+  #poster .stage { flex:1 1 auto; overflow:auto; display:flex; padding:0 14px 14px; min-height:0; }
+  #poster img {
+    margin:auto; max-width:100%; max-height:100%; object-fit:contain; background:#fafaf8;
+    border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5); cursor: zoom-in;
+  }
+  #poster.zoomed img { max-width:none; max-height:none; width:3325px; cursor: zoom-out; margin:0; }
+
+  @media (max-width:760px) {
+    #bar { left:58px; gap:6px; }
+    #bar .en, .chip .lbl { display:none; }
+    .chip { padding:9px 10px; }
+    .seg button, .chip { padding:8px 9px; }
+    #legend {
+      top:auto; bottom:14px; left:14px; right:14px; width:auto; max-height:55%;
+    }
+    #info { display:none; }
+  }
+  @media (max-height:720px) { #info { display:none; } }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="bar" role="toolbar" aria-label="Контроли на картата / Map controls">
+  <div class="seg" role="group" aria-label="Подложка / Basemap">
+    <button type="button" data-base="map" aria-pressed="true">Карта <span class="en">Map</span></button>
+    <button type="button" data-base="topo" aria-pressed="false">Топо <span class="en">Topo</span></button>
+    <button type="button" data-base="sat" aria-pressed="false">Сателит <span class="en">Satellite</span></button>
+    <button type="button" data-base="light" aria-pressed="false">Светла <span class="en">Light</span></button>
+  </div>
+  <button type="button" class="chip" id="btn-relief" aria-pressed="false" aria-label="Релеф / Relief">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+    <span class="lbl">Релеф</span> <span class="en">Relief</span>
+  </button>
+  <button type="button" class="chip" id="btn-poster" aria-haspopup="dialog" aria-label="Постер / Poster">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+    <span class="lbl">Постер</span> <span class="en">Poster</span>
+  </button>
+  <button type="button" class="chip" id="btn-legend" aria-pressed="true" aria-controls="legend" aria-label="Легенда / Legend">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+    <span class="lbl">Легенда</span> <span class="en">Legend</span>
+  </button>
+</div>
+
+<div id="status" class="panel" role="status" aria-live="polite">Зареждане на данните… / Loading data…</div>
+
+<div id="poster" role="dialog" aria-modal="true" aria-labelledby="poster-title" hidden>
+  <header>
+    <h2 id="poster-title">Постер на картата<span>Map poster</span></h2>
+    <a class="act" id="poster-dl" href="poster.webp" download="dragoman-chepan-map.webp">Изтегли / Download</a>
+    <button type="button" class="act" id="poster-close">Затвори / Close</button>
+  </header>
+  <div class="stage">
+    <img id="poster-img" src="poster.webp" width="3325" height="2205" loading="lazy" decoding="async"
+         alt="Топографска карта на Драгоманското блато и Чепън планина с легенда, релеф и населени места">
+  </div>
+</div>
+
+<div class="panel" id="legend">
+  <h1>Драгоманско блато · Чепън планина</h1>
+  <div class="sub">Dragoman Marshes · Chepan Mountain</div>
+
+  <h2>Легенда / Legend</h2>
+  <div class="lg"><span class="sw" style="background:#1baf7a;opacity:.35;border-color:#1baf7a"></span>
+    <span>Защитена зона „Драгоман“<span class="en">Dragoman Protected Area</span></span></div>
+  <div class="lg"><span class="sw" style="background:#6250d6;opacity:.30;border-color:#6250d6"></span>
+    <span>Западна Стара планина и Предбалкан<span class="en">Western Balkan &amp; Fore-Balkan Mtns</span></span></div>
+  <div class="lg"><span class="sw" style="background:#cde2fb"></span>
+    <span>Блато и влажни места<span class="en">Marsh &amp; wetlands</span></span></div>
+  <div class="lg"><span class="sw" style="background:#5598e7"></span>
+    <span>Язовири и езера<span class="en">Reservoirs &amp; lakes</span></span></div>
+  <div class="lg"><span class="sw line" style="background:#5598e7"></span>
+    <span>Реки, потоци, канали<span class="en">Rivers, streams &amp; canals</span></span></div>
+  <div class="lg"><span class="sw" style="background:#c8dfc0"></span>
+    <span>Гори и храсталаци<span class="en">Forest &amp; scrub</span></span></div>
+  <div class="lg"><span class="sw" style="background:#f0ecd9"></span>
+    <span>Земеделски земи<span class="en">Farmland &amp; meadows</span></span></div>
+  <div class="lg"><span class="sw" style="background:#ddd9d2"></span>
+    <span>Сгради<span class="en">Buildings</span></span></div>
+  <div class="lg"><span class="sw line" style="background:#eb6834"></span>
+    <span>Главни пътища<span class="en">Major roads</span></span></div>
+  <div class="lg"><span class="sw dash" style="border-color:#7a4a12"></span>
+    <span>Чепън планина — било<span class="en">Chepan Mountain ridge</span></span></div>
+  <div class="lg"><span class="sw dash" style="border-color:#6b6a65"></span>
+    <span>Пътеки<span class="en">Paths &amp; tracks</span></span></div>
+
+  <h2>Символи / Symbols</h2>
+  <div class="lg"><span class="sw" style="background:none;border:none;text-align:center;color:#eb6834;font-size:12px">▲</span>
+    <span>Върхове<span class="en">Peaks</span></span></div>
+  <div class="lg"><span class="sw" style="background:none;border:none;text-align:center;color:#2a78d6;font-size:12px">●</span>
+    <span>Извори и пещери<span class="en">Springs &amp; caves</span></span></div>
+  <div class="lg"><span class="sw" style="background:none;border:none;text-align:center;color:#0b0b0b;font-size:12px">■</span>
+    <span>Населени места и забележителности<span class="en">Settlements &amp; POI</span></span></div>
+  <div class="lg"><span class="sw" style="background:linear-gradient(90deg,#e8eef1,#f0e6cf,#c0a67f);height:9px"></span>
+    <span>Релеф 465–1200 m<span class="en">Elevation 465–1200 m</span></span></div>
+
+  <div class="credits">
+    Данни / Data: © <a href="https://www.openstreetmap.org/copyright" target="_blank"
+    style="color:inherit">OpenStreetMap</a> contributors (ODbL) · NASA SRTM 1 arc-sec · Natural Earth<br>
+    Подложки / Basemaps: © Esri · © OpenTopoMap (CC-BY-SA)<br>
+    Картата е генерирана с Claude Code
+  </div>
+</div>
+
+<div class="panel" id="info">
+  <b>Драгоманско блато</b> — най-голямото карстово блато в България (~5 000 ha),
+  в долината на Драгоманска река, на 22–25 km от Драгоман и ~30 km северно от София.
+  <br><b>Чепън планина</b> (Чепан) е погранична планина с връх Обедо 1142 m и връх
+  Чепан 1084 m — границата с Република Сърбия.
+  <br><span style="color:#6b6a65">Dragoman Marshes: Bulgaria's largest karst marsh.
+  Chepan Mountain: border ridge with Serbia, peak Obedo 1142 m.</span>
+</div>
+
+
+<script>
+var GEOJSON = null; // loaded from data.json
+var BOUNDS = [[42.84,22.82],[43.03,23.09]];
+
+var map = L.map('map', { zoomControl: true, attributionControl: true, maxZoom: 19, zoomSnap: 0.25, preferCanvas: true })
+  .setView([42.935,22.955], 12);
+
+// Basemaps: keyless providers that work from file:// and from any host (no Referer needed).
+var OSM_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+var ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+var BASEMAPS = {
+  map: L.tileLayer(ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    { maxNativeZoom: 18, maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, USGS, Intermap, NRCAN, METI, TomTom' }),
+  topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    { subdomains: 'abc', maxNativeZoom: 17, maxZoom: 19,
+      attribution: 'Map data: ' + OSM_ATTR + ', <a href="http://viewfinderpanoramas.org">SRTM</a> | ' +
+        'Style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> ' +
+        '(<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' }),
+  sat: L.tileLayer(ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { maxNativeZoom: 18, maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community' }),
+  light: L.tileLayer(ESRI + 'Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    { maxNativeZoom: 16, maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS | ' + OSM_ATTR })
+};
+
+var currentBase = null;
+// Thematic polygon fills are thinned out over satellite imagery so the photo stays readable.
+var fillLayers = [];
+function applyFillMode() {
+  var k = currentBase === 'sat' ? 0.25 : 1;
+  fillLayers.forEach(function(o) { o.layer.setStyle({ fillOpacity: o.base * k }); });
+}
+function setBasemap(name) {
+  if (!BASEMAPS[name] || currentBase === name) return;
+  if (currentBase) map.removeLayer(BASEMAPS[currentBase]);
+  BASEMAPS[name].addTo(map).bringToBack();
+  currentBase = name;
+  applyFillMode();
+  document.querySelectorAll('[data-base]').forEach(function(b) {
+    b.setAttribute('aria-pressed', String(b.dataset.base === name));
+  });
+  try { localStorage.setItem('dragoman-base', name); } catch (e) {}
+}
+var savedBase = 'map';
+try { savedBase = localStorage.getItem('dragoman-base') || savedBase; } catch (e) {}
+setBasemap(BASEMAPS[savedBase] ? savedBase : 'map');
+document.querySelectorAll('[data-base]').forEach(function(b) {
+  b.addEventListener('click', function() { setBasemap(b.dataset.base); });
+});
+
+// Relief overlay
+var reliefLayer = null;
+var reliefBtn = document.getElementById('btn-relief');
+function toggleRelief() {
+  if (reliefLayer) {
+    map.removeLayer(reliefLayer); reliefLayer = null;
+  } else {
+    reliefLayer = L.imageOverlay('relief.webp', BOUNDS, {
+      opacity: 0.62, interactive: false
+    }).addTo(map);
+    reliefLayer.bringToBack();
+    BASEMAPS[currentBase].bringToBack();
+  }
+  reliefBtn.setAttribute('aria-pressed', String(!!reliefLayer));
+}
+reliefBtn.addEventListener('click', toggleRelief);
+
+// Legend: open on desktop, collapsed on phones
+var legend = document.getElementById('legend');
+var legendBtn = document.getElementById('btn-legend');
+function setLegend(open) {
+  legend.hidden = !open;
+  legendBtn.setAttribute('aria-pressed', String(open));
+}
+// open by default only when there is room for it (also the case when embedded in a short frame)
+setLegend(!window.matchMedia('(max-width: 760px), (max-height: 700px)').matches);
+legendBtn.addEventListener('click', function() { setLegend(legend.hidden); });
+
+// Poster viewer: Esc / backdrop closes, click image toggles full size, focus is trapped and restored
+var poster = document.getElementById('poster');
+var posterClose = document.getElementById('poster-close');
+var posterDl = document.getElementById('poster-dl');
+var posterImg = document.getElementById('poster-img');
+var posterTrigger = null;
+function openPoster() {
+  posterTrigger = document.activeElement;
+  poster.hidden = false;
+  poster.classList.remove('zoomed');
+  posterImg.loading = 'eager';
+  posterClose.focus();
+}
+function closePoster() {
+  poster.hidden = true;
+  if (posterTrigger && posterTrigger.focus) posterTrigger.focus();
+}
+document.getElementById('btn-poster').addEventListener('click', openPoster);
+posterClose.addEventListener('click', closePoster);
+posterImg.addEventListener('click', function() { poster.classList.toggle('zoomed'); });
+poster.addEventListener('click', function(e) { if (e.target === poster || e.target.classList.contains('stage')) closePoster(); });
+document.addEventListener('keydown', function(e) {
+  if (poster.hidden) return;
+  if (e.key === 'Escape') { closePoster(); return; }
+  if (e.key === 'Tab') {
+    var first = posterDl, last = posterClose;
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+
+var styles = {
+  dragoman: { color: '#1baf7a', weight: 2, dashArray: '7 4', fillColor: '#1baf7a',
+               fillOpacity: 0.14 },
+  stara: { color: '#6250d6', weight: 1.8, dashArray: '5 4', fillColor: '#6250d6', fillOpacity: 0.09 },
+  reserve: { color: '#e87ba4', weight: 1.4, fillColor: '#e87ba4', fillOpacity: 0.14 },
+  wetland: { color: '#86b6ef', weight: 0.7, fillColor: '#cde2fb', fillOpacity: 0.85 },
+  water: { color: '#256abf', weight: 0.9, fillColor: '#5598e7', fillOpacity: 0.9 },
+  reservoir: { color: '#256abf', weight: 1.2, fillColor: '#5598e7', fillOpacity: 0.92 },
+  forest: { color: '#8fae86', weight: 0.4, fillColor: '#c8dfc0', fillOpacity: 0.7 },
+  farm: { color: '#d8d2b4', weight: 0.4, fillColor: '#f0ecd9', fillOpacity: 0.6 },
+  scrub: { color: '#cfc9ae', weight: 0.4, fillColor: '#e8e4d3', fillOpacity: 0.6 },
+  park: { color: '#b3c9a8', weight: 0.5, fillColor: '#dfe9d6', fillOpacity: 0.7 },
+  building: { color: '#b6b1a8', weight: 0.4, fillColor: '#ddd9d2', fillOpacity: 0.9 },
+  river: { color: '#256abf', weight: 2.4 },
+  stream: { color: '#3987e5', weight: 1.1 },
+  canal: { color: '#5598e7', weight: 1.2 },
+  drain: { color: '#86b6ef', weight: 0.8 },
+  major: { color: '#eb6834', weight: 3 },
+  minor: { color: '#e8a317', weight: 1.4, opacity: 0.85 },
+  track: { color: '#898781', weight: 1.0 },
+  path: { color: '#898781', weight: 1.0, dashArray: '3 2' },
+  chepan_ridge: { color: '#7a4a12', weight: 2.6, dashArray: '9 5' },
+  chepan_forest: { color: '#8fae86', weight: 0.5, fillColor: '#cfdcc6', fillOpacity: 0.8 },
+  peak: { color: '#eb6834', weight: 1.6 },
+  saddle: { color: '#898781', weight: 1.4 },
+  spring: { color: '#2a78d6', weight: 1.4 },
+  place: { color: '#0b0b0b', weight: 1.6 },
+  poi: { color: '#52514e', weight: 1.0 },
+  amenity: { color: '#52514e', weight: 1.0 },
+  historic: { color: '#52514e', weight: 1.0 }
+};
+
+var CLASS_BG = {
+  dragoman: 'Защитена зона „Драгоман“', stara: 'Западна Стара планина и Предбалкан',
+  reserve: 'Природна забележителност', wetland: 'Блато / влажни места',
+  water: 'Воден обект', reservoir: 'Язовир', forest: 'Гора', farm: 'Земеделска земя',
+  scrub: 'Храсталак', park: 'Парк', building: 'Сграда', river: 'Река',
+  stream: 'Поток', canal: 'Канал', drain: 'Канавка', major: 'Главен път',
+  minor: 'Местен път', track: 'Полски път', path: 'Пътека', peak: 'Върх',
+  saddle: 'Седловина', spring: 'Извор', place: 'Населено място', poi: 'Забележителност',
+  amenity: 'Сграда / услуга', historic: 'Исторически паметник',
+  chepan_ridge: 'Чепън планина — било', chepan_forest: 'Гора Чепън'
+};
+var CLASS_EN = {
+  dragoman: 'Dragoman Protected Area', stara: 'Western Balkan & Fore-Balkan Mtns',
+  reserve: 'Nature landmark', wetland: 'Marsh / wetland', water: 'Water body',
+  reservoir: 'Reservoir', forest: 'Forest', farm: 'Farmland', scrub: 'Scrub',
+  park: 'Park', building: 'Building', river: 'River', stream: 'Stream',
+  canal: 'Canal', drain: 'Ditch', major: 'Major road', minor: 'Local road',
+  track: 'Track', path: 'Path', peak: 'Peak', saddle: 'Saddle', spring: 'Spring',
+  place: 'Settlement', poi: 'Point of interest', amenity: 'Amenity',
+  historic: 'Historic monument',
+  chepan_ridge: 'Chepan Mountain ridge', chepan_forest: 'Chepan forest'
+};
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function popupFor(f) {
+  var p = f.properties;
+  var title = esc(p.name || CLASS_BG[p.class] || p.class);
+  var en = esc(p.name_en || CLASS_EN[p.class] || '');
+  var meta = [];
+  if (p.ele) meta.push(esc(p.ele) + ' m');
+  if (p.ref) meta.push('ref ' + esc(p.ref));
+  var lat = f.geometry.type === 'Point' ? f.geometry.coordinates[1] : '';
+  var lon = f.geometry.type === 'Point' ? f.geometry.coordinates[0] : '';
+  if (lat !== '') meta.push(lat.toFixed(5) + ', ' + lon.toFixed(5));
+  return '<div class="popup-title">' + title + '</div>' +
+         (en && en !== title ? '<div class="popup-en">' + en + '</div>' : '') +
+         (meta.length ? '<div class="popup-meta">' + meta.join(' · ') + '</div>' : '');
+}
+
+// group features by class so we can style each layer
+var peakIcon = L.divIcon({className:'', html:'<div style="font-size:13px;color:#eb6834;'
+  + 'text-shadow:0 0 3px #fff,0 0 3px #fff">&#9650;</div>',
+  iconSize:[14,14], iconAnchor:[7,7]});
+var springIcon = L.divIcon({className:'', html:'<div style="font-size:12px;color:#2a78d6;'
+  + 'text-shadow:0 0 3px #fff,0 0 3px #fff">&#9679;</div>',
+  iconSize:[12,12], iconAnchor:[6,6]});
+var placeIcon = L.divIcon({className:'', html:'<div style="font-size:11px;color:#0b0b0b;'
+  + 'text-shadow:0 0 3px #fff,0 0 3px #fff">&#9632;</div>',
+  iconSize:[12,12], iconAnchor:[6,6]});
+
+function buildLayers() {
+  var byClass = {};
+  GEOJSON.features.forEach(function(f) {
+    var c = f.properties.class || 'other';
+    (byClass[c] = byClass[c] || []).push(f);
+  });
+
+  Object.keys(byClass).forEach(function(c) {
+    var st = styles[c];
+    if (!st) return;
+    var layer = L.geoJSON({type:'FeatureCollection', features: byClass[c]}, {
+      style: st,
+      pointToLayer: function(f, latlng) {
+        if (c === 'peak') return L.marker(latlng, {icon: peakIcon});
+        if (c === 'spring') return L.marker(latlng, {icon: springIcon});
+        if (c === 'place') return L.marker(latlng, {icon: placeIcon});
+        return L.circleMarker(latlng, {radius: 3, color: '#52514e', fillColor: '#fcfcfb',
+          fillOpacity: .9, weight: 1});
+      },
+      onEachFeature: function(f, lyr) {
+        lyr.bindPopup(popupFor(f));
+      }
+    }).addTo(map);
+    if (st.fillOpacity) fillLayers.push({ layer: layer, base: st.fillOpacity });
+  });
+
+
+  // highlight the Dragoman protected area with a tooltip
+  if (byClass['dragoman']) {
+    L.geoJSON({type:'FeatureCollection', features: byClass['dragoman']}, {
+      style: {color:'#1baf7a', weight:2.4, dashArray:'8 5', fill:false},
+      onEachFeature: function(f, lyr) {
+        lyr.bindTooltip('Драгоманско блато / Dragoman Marshes', {sticky:true});
+      }
+    }).addTo(map);
+  }
+}
+
+L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
+
+// Fit the study area, leaving room for the legend panel on wide screens
+function fitStudyArea() {
+  var wide = !window.matchMedia('(max-width: 760px)').matches;
+  var right = wide && !legend.hidden ? legend.offsetWidth + 40 : 26;
+  map.fitBounds(BOUNDS, { paddingTopLeft: [26, 64], paddingBottomRight: [right, 26] });
+}
+fitStudyArea();
+
+// Load the data after the basemap is up so the page is usable immediately
+var statusEl = document.getElementById('status');
+fetch('data.json')
+  .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(function(data) {
+    GEOJSON = data;
+    buildLayers();
+    applyFillMode();
+    statusEl.hidden = true;
+  })
+  .catch(function() {
+    statusEl.classList.add('error');
+    statusEl.textContent = 'Данните не се заредиха. Отворете страницата през уеб сървър, не като файл. / ' +
+      'Data failed to load. Serve this page over HTTP instead of opening it as a file.';
+  });
+</script>
+</body>
+</html>

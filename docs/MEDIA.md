@@ -59,7 +59,7 @@ The photos are self-hosted (previously hotlinked from visitdragoman.com, which n
 | `fringed-water-lily` | Nymphoides peltata | TeunSpaans | CC BY-SA 3.0 |
 | `viola` | Viola pumila | Public domain (Wikimedia Commons) | Public domain |
 
-`ramsar-map.jpg` is the Ramsar site map with legend (701x437, supplied by the project owner, source: visitdragoman.com).
+`map-preview-*.webp` are poster crops for the interactive map teaser (see [MAP.md](MAP.md)). `ramsar-map.jpg` is the Ramsar site map with legend (701x437, supplied by the project owner, source: visitdragoman.com).
 
 Regenerate a rendition with FFmpeg (WebP, no upscaling):
 
