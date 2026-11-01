@@ -12,6 +12,7 @@ All notable changes to this project are documented here. The format follows [Kee
 - Species and map images no longer depend on visitdragoman.com (it began returning 403); they are self-hosted as responsive WebP.
 
 ### Changed
+- The old Ramsar map in the visitor section is replaced by the new map poster (lightbox with a link to the full-size file); the README screenshot is refreshed.
 - Build tooling upgraded to major versions: Vite 8, `@vitejs/plugin-react` 6, TypeScript 7 and `lucide-react` 1. Minimum Node.js is now 22.12 (required by Vite 8).
 
 ## [1.1.0] - 2026-10-14

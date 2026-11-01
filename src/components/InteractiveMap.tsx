@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { ExternalLink, MousePointerClick } from "lucide-react";
 import { useLanguage } from "../i18n";
 
-const PREVIEW_WIDTHS = [640, 1280, 1920];
+const PREVIEW_WIDTHS = [640, 1280, 1600];
 
 // The map is a standalone page (public/map/) embedded on demand: nothing from it is
 // downloaded until the visitor activates it, and activation also stops the embedded
