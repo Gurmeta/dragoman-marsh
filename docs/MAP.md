@@ -10,7 +10,8 @@ A standalone [Leaflet](https://leafletjs.com/) page in `public/map/`. It is copi
 | `data.json` | GeoJSON, 18.7k OpenStreetMap features (coordinates rounded to 5 decimals, about 1 m) | ~6.5 MB (about 1 MB gzipped) |
 | `relief.webp` | Shaded-relief overlay (NASA SRTM), georeferenced by `BOUNDS` in `index.html` | ~60 KB |
 | `poster.webp` | Printable poster with legend, opened by the **Poster** button | ~800 KB |
-| `../images/map-preview-*.webp` | Preview shown on the site before the map is activated | 44-271 KB |
+| `../images/map-preview-*.webp` | Screenshot of the map, shown on the site before it is activated | 64-291 KB |
+| `../images/poster-*.webp` | Card previews of the poster in the visitor section | 44-271 KB |
 
 ## Behaviour
 

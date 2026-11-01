@@ -108,11 +108,15 @@ export default function VisitInfo() {
             aria-label={t.visit.map_title}
           >
             <img
-              src={`${import.meta.env.BASE_URL}images/ramsar-map.jpg`}
+              src={`${import.meta.env.BASE_URL}images/poster-1280.webp`}
+              srcSet={[640, 1280, 1920]
+                .map((w) => `${import.meta.env.BASE_URL}images/poster-${w}.webp ${w}w`)
+                .join(", ")}
+              sizes="(min-width: 1024px) 1500px, 150vw"
               alt=""
               loading="lazy"
               decoding="async"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[400px]"
+              className="w-full h-full object-cover object-[14%_center] group-hover:scale-105 transition-transform duration-700 min-h-[400px]"
             />
             <div className="absolute inset-0 bg-stone-900/20 group-hover:bg-stone-900/10 transition-colors duration-500" />
 
@@ -197,10 +201,21 @@ export default function VisitInfo() {
                 <X className="w-6 h-6" />
               </button>
               <img
-                src={`${import.meta.env.BASE_URL}images/ramsar-map.jpg`}
+                src={`${import.meta.env.BASE_URL}map/poster.webp`}
                 alt={t.visit.map_title}
+                width={3325}
+                height={2205}
                 className="w-full h-auto max-h-[90vh] object-contain bg-stone-100"
               />
+              <a
+                href={`${import.meta.env.BASE_URL}map/poster.webp`}
+                target="_blank"
+                rel="noopener"
+                className="absolute bottom-4 left-4 inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-black/60 text-white text-sm font-medium hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 transition-colors"
+              >
+                <Maximize2 className="w-4 h-4" aria-hidden="true" />
+                {t.visit.imap_open}
+              </a>
             </motion.div>
           </motion.div>
         )}
